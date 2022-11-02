@@ -2,9 +2,8 @@ const request = require("request");
 const encoding = require("encoding");
 const cheerio = require("cheerio");
 
-const url =
-  "https://restauracie.sme.sk/restauracia/foodoo-cantina_10461-ruzinov_2980/denne-menu";
-const slackUrl = "SlackURL"
+const url = "https://www.lanogi.sk/denne-menu/";
+const slackUrl = "Hoook";
 const data = [];
 
 request(
@@ -18,29 +17,33 @@ request(
   },
   (err, res, body) => {
     if (err) throw err;
+
     const $ = cheerio.load(encoding.convert(body, "UTF-8").toString());
-    const menucka = $(".dnesne_menu");
-    const ostatneMenucka = $(".ostatne_menu");
-    menucka.each((idx, el) => {
-      const element = $(el);
-      data.push("\n\n");
-      element.find(".jedlo_polozka").each((idx, el) => {
-        data.push($(el).find("div").text().trim());
-      });
+    const menu = $(
+      "body > section.page-content > div > div > article > div:nth-child(1) > div > div > div > div:nth-child(3)"
+    );
+
+    menu.find("p").each((i, el) => {
+      data.push($(el).text());
     });
-    ostatneMenucka.each((idx, el) => {
-      const element = $(el);
-      data.push("\n\n");
-      element.find(".jedlo_polozka").each((idx, el) => {
-        data.push($(el).find("div").text().trim());
-      });
+
+    let message = "------ lanogi.sk ------";
+
+    data.forEach((item, i) => {
+      message += `\n${"🟢"} ${item}`;
     });
+
+    data.length <= 0 &&
+      (message =
+        ":dovolenka: Ahojte milí kolegovia, " +
+        "dnes som si vzal dovolenku :hauko:");
+
     request(
       {
         url: slackUrl,
         method: "POST",
         json: {
-          text: `${data.map((item) => item).join("\n")}`,
+          text: message,
         },
       },
       (err, res, body) => {
