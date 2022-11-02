@@ -2,8 +2,7 @@ const request = require("request");
 const encoding = require("encoding");
 const cheerio = require("cheerio");
 
-const url =
-  "https://restauracie.sme.sk/restauracia/foodoo-cantina_10461-ruzinov_2980/denne-menu";
+const url = "url";
 const slackUrl = "SlackURL"
 const data = [];
 
@@ -19,28 +18,14 @@ request(
   (err, res, body) => {
     if (err) throw err;
     const $ = cheerio.load(encoding.convert(body, "UTF-8").toString());
-    const menucka = $(".dnesne_menu");
-    const ostatneMenucka = $(".ostatne_menu");
-    menucka.each((idx, el) => {
-      const element = $(el);
-      data.push("\n\n");
-      element.find(".jedlo_polozka").each((idx, el) => {
-        data.push($(el).find("div").text().trim());
-      });
-    });
-    ostatneMenucka.each((idx, el) => {
-      const element = $(el);
-      data.push("\n\n");
-      element.find(".jedlo_polozka").each((idx, el) => {
-        data.push($(el).find("div").text().trim());
-      });
-    });
+
+    messages = "";
     request(
       {
         url: slackUrl,
         method: "POST",
         json: {
-          text: `${data.map((item) => item).join("\n")}`,
+          text: `messages`,
         },
       },
       (err, res, body) => {
