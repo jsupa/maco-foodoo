@@ -10,7 +10,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "menucka-foodoo": "git checkout menucka.sk-foodoo; node index.js; git checkout master",
+    "lanogi": "git checkout lanogi.sk; node index.js; git checkout master"
   },
   "repository": {
     "type": "git",
